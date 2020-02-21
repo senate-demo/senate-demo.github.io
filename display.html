@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>senate thing</title>
+    <meta name="description" content="senate thing">
+    <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville|Roboto&display=swap" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+
+<script src="statelist.js"></script>
+<script src="chart.js"></script>
+<script src="https://www.chartjs.org/samples/latest/utils.js"></script>
+
+<noscript>Please enable JavaScript to view this page.</noscript>
+<p id="err-msg"></p>
+<div id="main">
+
+<p><i>
+    This site is unfinished and there is still a lot I need to polish before
+    it's ready. If you have feedback, my email address is
+    "charlie charlierobinson io" (you know what to put instead of the spaces)
+</i></p>
+
+<p><a href="index.html">Back to Index</a></p>
+
+<!-- HEADING -->
+<div id="heading" class="grey-box">
+    <h2 id="title"></h2>
+    <p id="details"></p>
+    <p id="subject"></p>
+    <p>Result: <b id="result"></b></p>
+    <p id="link"></p>
+</div>
+
+<!-- VOTE DISTRIBUTION -->
+<section class="stat-box grey-box">
+    <div class="chart-container">
+        <canvas class="chart" id="votes-pie"></canvas>
+    </div>
+    <div class="data-desc">
+    <h2>Vote Representation</h2>
+    <p><i>
+        Inner Ring: Senate votes, Outer Ring: Represented population
+    </i></p>
+    <ul>
+        <li>
+            <span id="votes-label">Votes:</span>
+            <ul>
+                <li id="votes-senators-0"></li>
+                <li id="votes-senators-1"></li>
+            </ul>
+        </li>
+        <li id="votes-pop-0"></li>
+        <li id="votes-pop-1"></li>
+    </ul>
+    <p id="disclaimers"></p>
+    </div>
+</section>
+
+<!-- PARTY DISTRIBUTION -->
+<section class="stat-box grey-box">
+    <div class="chart-container">
+        <canvas class="chart" id="parties-pie"></canvas>
+    </div>
+    <div class="data-desc">
+    <h2>Party Representation</h2>
+    <p><i>
+        Inner Ring: Parties of Senators, Outer Ring: Represented population
+    </i></p>
+    <ul>
+        <li>
+            During this vote, the Senate was:
+            <ul>
+                <li id="parties-senators-0"></li>
+                <li id="parties-senators-1"></li>
+                <li id="parties-senators-2"></li>
+            </ul>
+        </li>
+        <li id="parties-pop-0"></li>
+        <li id="parties-pop-1"></li>
+        <li id="parties-pop-2"></li>
+    </ul></div>
+</section>
+
+<!-- STATES -->
+<div>
+    <p>
+        Below are a list of the states along with their Senators' votes.
+    </p>
+    <p>
+        A state's <b>representation score</b> is a number that reflects how much
+        a citizen living in the state is represented in the Senate. A score of
+        100% is a true representative democracy, i.e. Senators representing
+        exactly 1/100th of the population.
+    </p>
+    <p>
+        Any number above/below 100% is a measure of how over/underrepresented 
+        the citizents of a state are. In other words, each state is given equal
+        represenation in the Senate (2 Senators per state) regardless of
+        population, so "per-capita" representation will vary based on
+        population.
+    </p>
+</div>
+<table id="states">
+    <tr>
+        <th>State</th>
+        <th colspan="2">Senator</th>
+        <th>Vote Choice</th>
+        <th>Population</th>
+        <th>Score</th>
+    </tr>
+</table>
+</div>
+
+<script>
+
+// get vote for page
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const year = urlParams.get('year');
+const vote_number = urlParams.get('vote');
+
+// add data
+var script = document.createElement('script');
+script.src = `data/${year}/${vote_number}.js`;
+document.head.appendChild(script);
+
+// if there isnt any data there (or params invalid)
+script.addEventListener('error', function() {
+    document.getElementById("err-msg").innerHTML = "Can't find a Senate vote here. Check your URL";
+    document.getElementById("main").style.display = "none"
+}, true);
+
+// fill page once vote data is obtained
+script.onload = function() {
+
+    // vote data
+    const vote = JSON.parse(raw_vote);
+
+    // fill header
+    for (detail in vote.details) {
+        document.getElementById(detail).innerHTML = vote.details[detail];
+    }
+
+    // add representation data text
+    const stats_msgs = vote.stats_msgs;
+    for (subject in stats_msgs) {
+        const subject_msgs = stats_msgs[subject];
+        for (group in subject_msgs) {
+            const group_msgs = subject_msgs[group];
+            for (i in group_msgs) {
+                const labelId = [subject, group, i].join('-');
+                var label = document.getElementById(labelId);
+                label.innerHTML = group_msgs[i];
+            }
+        }
+    }
+    
+    // add disclaimers
+    if (vote.disclaimers.length) {
+        document.getElementById('votes-label').innerHTML = 'Votes*:';
+        var disclaimers = document.getElementById('disclaimers');
+        disclaimers.innerHTML = '* ' + vote.disclaimers.join('<br>')
+    }
+    
+    // adding pie charts - messy code but multiple charts in chartjs was causing
+    // a few weird problems so tthe implementation is a little odd
+
+    const chartOptions = {
+            legend: {
+                onClick: (e) => e.stopPropagation()
+            },
+            tooltips: {
+                enabled: false
+            },
+            aspectRatio: 1,
+    }
+
+    var votesChart = document.getElementById('votes-pie');
+    var votesPie = new Chart(votesChart, {
+        type: 'pie',
+        data: {
+            datasets: [
+                {
+                    data: Object.values(vote.stats.votes.pop),
+                    backgroundColor: ['rgb(75,192,192)', 'rgb(153,102,255)']
+                },
+                {
+                    data: Object.values(vote.stats.votes.senators),
+                    backgroundColor: ['rgb(75,192,192)', 'rgb(153,102,255)']
+                }
+            ],
+            labels: Object.keys(vote.stats.votes.senators)
+        },
+        options: chartOptions
+    });
+    
+    var partiesChart = document.getElementById('parties-pie');
+    var partiesPie = new Chart(partiesChart, {
+        type: 'pie',
+        data: {
+            datasets: [
+                {
+                    data: Object.values(vote.stats.parties.pop),
+                    backgroundColor: ['rgb(255,99,132)', 'rgb(54,162,235)', 'rgb(201,203,207)'],
+                },
+                {
+                    data: Object.values(vote.stats.parties.senators),
+                    backgroundColor: ['rgb(255,99,132)', 'rgb(54,162,235)', 'rgb(201,203,207)'],
+                }
+            ],
+            labels: ['Republican', 'Democratic', 'Independent/Other']
+        },
+        options: chartOptions
+    });
+
+    // add states table
+
+    // add states table
+    var stateList = document.getElementById("states");
+    for (stateName in vote.states) {
+        let state = vote.states[stateName];
+        for (i in state.senators) {
+            let senator = state.senators[i];
+            var senatorRow = document.createElement('tr');
+            if (i == 0) {
+                var stateLabel = document.createElement('td');
+                stateLabel.innerHTML = stateNames[stateName]
+                stateLabel.rowSpan = "2";
+                senatorRow.appendChild(stateLabel);
+            }
+            var senatorName = document.createElement('td');
+            senatorName.innerHTML = senator.name;
+            senatorRow.appendChild(senatorName);
+            
+            var senatorParty = document.createElement('td');
+            senatorParty.innerHTML = senator.party;
+            senatorRow.appendChild(senatorParty);
+
+            var senatorChoice = document.createElement('td');
+            senatorChoice.innerHTML = senator.choice;
+            senatorRow.appendChild(senatorChoice);
+            
+            if (i == 0) {
+                var statePop = document.createElement('td');
+                statePop.innerHTML = state.pop;
+                statePop.rowSpan = "2";
+                senatorRow.appendChild(statePop);
+                
+                var stateScore = document.createElement('td');
+                stateScore.innerHTML = state.score;
+                stateScore.rowSpan = "2";
+                senatorRow.appendChild(stateScore);
+            }
+
+            stateList.appendChild(senatorRow);
+        }
+    };
+
+};
+
+
+</script>
+</body>
+</html>

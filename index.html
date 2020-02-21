@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>senate thing</title>
+    <meta name="description" content="senate thing">
+    <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville|Roboto&display=swap" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+
+<script src="chart.js"></script>
+<script src="https://www.chartjs.org/samples/latest/utils.js"></script>
+
+<noscript>Please enable JavaScript to view this page.</noscript>
+
+<div id="main">
+
+<p><i>
+    This site is unfinished and there is still a lot I need to polish before
+    it's ready. If you have feedback, my email address is
+    "charlie charlierobinson io" (you know what to put instead of the spaces)
+</i></p>
+
+<!-- HEADING -->
+<h1>List of Senate Votes</h1>
+
+<div id="year-list"></div>
+
+<!-- LIST -->
+<div id="vote-list"></div>
+
+<script>
+
+// year buttons
+const years = [2011,2012,2013,2014,2015,2016,2017,2018,2019,2020];
+var yearList = document.getElementById('year-list');
+years.forEach(function(year) {
+    var yearButton = document.createElement('a');
+    yearButton.href = '?year=' + year;
+    yearButton.innerHTML = year;
+    yearList.appendChild(yearButton);
+});
+
+// get vote for page
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+var year = urlParams.get('year');
+if (!year) {
+    year = 2020
+}
+var script = document.createElement('script');
+
+// fill page once vote data is obtained
+script.onload = function() {
+
+    // vote data
+    const year = JSON.parse(year_index);
+
+    for (voteId in year) {
+        const vote = year[voteId];
+        var a = document.createElement('a');
+        const innerHTML = `
+            <div class="index-box">
+                <p><b>${vote.title}</b></p>
+                <p><i>${vote.details}</i></p>
+                <p>${vote.subject}</p>
+            </div>
+        `
+        a.href = 'display.html?' + vote.link;
+        a.innerHTML = innerHTML;
+
+        document.getElementById('vote-list').appendChild(a);
+    }
+
+};
+script.src = `index/sources/${year}.js`;
+document.head.appendChild(script);
+
+</script>
+</body>
+</html>
+

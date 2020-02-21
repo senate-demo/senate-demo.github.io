@@ -1,0 +1,139 @@
+@import url('https://rsms.me/inter/inter.css');
+html {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+p, h2, h3 {
+    margin: 1rem;
+}
+
+#year-list > a{
+    padding: 0.3rem;
+}
+
+#main {
+    width: 900px;
+    margin: 2rem auto;
+}
+#main > * {
+    margin: 2rem 0;
+}
+
+#disclaimers {
+    font-style: italic;
+}
+
+.index-box {
+    border-radius: 1rem;
+    background-color: #ddd;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.index-box:hover {
+    background-color: #ccc;
+}
+
+.index-box > p{
+    margin: 0.5rem
+}
+
+#vote-list > a{
+    text-decoration: none;
+    color: black
+}
+
+.grey-box {
+    border-radius: 1rem;
+    background-color: #ddd;
+    padding: 1rem;
+    margin-top: 2rem;
+}
+
+#heading {
+    font-family: 'Libre Baskerville', serif;
+}
+
+#details {
+    font-style: italic;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+tr:last-child {
+    border-bottom: none;
+}
+
+#states {
+    margin: auto;
+}
+/* */
+#states td:nth-child(5) {
+    border-left: 1px solid #ddd;
+}
+#states tr:nth-child(even) td:nth-child(1) {
+    border-right: 1px solid #ddd;
+}
+
+td, th {
+    padding: 0.3rem;
+    border: 1px solid #ddd;
+}
+
+.data-desc {
+    float: left;
+    width: 65%;
+}
+
+.chart-container {
+    float: right;
+    width: 35%;
+}
+
+.stat-box:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* for narrower windows */
+@media (max-width: 900px) {
+    #main {
+        width: 100%;
+    }
+    .data-desc {
+        width: 55%
+    }
+    .chart-container {
+        width: 45%
+    }
+}
+
+/* for phones */
+@media (max-width: 650px) {
+    .chart-container {
+        float: none;
+        width: 250px;
+        margin: auto;
+    }
+    .data-desc {
+        float: none;
+        width: 100%
+    }
+    #states {
+        font-size: 0.7em;
+        width: 100%
+    }
+}
+
+/* for super small phones */
+@media (max-width: 350px) {
+    #states {
+        font-size: 0.55em;
+    }
+    
+} 
