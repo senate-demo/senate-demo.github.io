@@ -17,10 +17,12 @@
 
 <div id="main">
 
-<p><i>
-    This site is unfinished and I am looking for feedback. My email address is
-    "charlie charlierobinson io"
-</i></p>
+<p><i id="topMessage"></i></p>
+
+<script>
+let em = 'charlie@' + 'charlierobinson.io'
+document.getElementById('topMessage').innerHTML = `This site is unfinished and I am looking for feedback. My email address is <a href="mailto:${em}">${em}</a>`
+</script>
 
 <!-- HEADING -->
 <h1>List of Senate Votes</h1>
