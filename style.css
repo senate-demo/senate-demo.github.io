@@ -71,17 +71,30 @@ tr:last-child {
 #states {
     margin: auto;
 }
-/* */
+
 #states td:nth-child(5) {
     border-left: 1px solid #ddd;
 }
+
 #states tr:nth-child(even) td:nth-child(1) {
     border-right: 1px solid #ddd;
+}
+
+#states tr:nth-child(4n+1), tr:nth-child(4n) {
+    background-color: #eee;
+}
+
+#states td:nth-child(5), td:nth-child(6) {
+    text-align: right;
 }
 
 td, th {
     padding: 0.3rem;
     border: 1px solid #ddd;
+}
+
+th {
+    background-color: white;
 }
 
 .data-desc {
