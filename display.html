@@ -18,10 +18,12 @@
 <p id="err-msg"></p>
 <div id="main">
 
-<p><i>
-    This site is unfinished and I am looking for feedback. My email address is
-    "charlie charlierobinson io"
-</i></p>
+<p><i id="topMessage"></i></p>
+
+<script>
+let em = 'charlie@' + 'charlierobinson.io'
+document.getElementById('topMessage').innerHTML = `This site is unfinished and I am looking for feedback. My email address is <a href="mailto:${em}">${em}</a>`
+</script>
 
 <p><a href="index.html">Back to Index</a></p>
 
